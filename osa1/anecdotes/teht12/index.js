@@ -5,15 +5,7 @@ class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            selected: 0,
-            votes:[
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ]
+            selected: 0
         }
     }
     randomAnecdote = () => {
@@ -22,36 +14,12 @@ class App extends React.Component {
         })
     }
 
-    vote = () => {
-        const votes_new = [...this.state.votes]
-        votes_new[this.state.selected] +=1
-        this.setState({
-            votes: votes_new
-        })
-    }
-
     render() {
-        const mostVoted = () =>
-            Math.max(...this.state.votes)
-
-        const mostVotedIndex = () =>
-            this.state.votes.indexOf(mostVoted())
-
-
         return (
             <div>
                 {this.props.anecdotes[this.state.selected]}
-                <div>
-                    This anecdote has {this.state.votes[this.state.selected]} votes
-                </div>
-                <button type="submit" onClick={this.vote}>Vote</button>
+                <br></br>
                 <button type="submit" onClick={this.randomAnecdote}>New anecdote</button>
-                <div>
-                    <h1>Anecdote with most votes:</h1>
-                    {this.props.anecdotes[mostVotedIndex()]}
-                    <br></br>
-                    This anecdote has {mostVoted()} votes
-                </div>
             </div>
         )
     }

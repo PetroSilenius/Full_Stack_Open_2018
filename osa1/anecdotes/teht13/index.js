@@ -31,27 +31,14 @@ class App extends React.Component {
     }
 
     render() {
-        const mostVoted = () =>
-            Math.max(...this.state.votes)
-
-        const mostVotedIndex = () =>
-            this.state.votes.indexOf(mostVoted())
-
-
         return (
             <div>
                 {this.props.anecdotes[this.state.selected]}
                 <div>
-                    This anecdote has {this.state.votes[this.state.selected]} votes
+                    <p>This anecdote has {this.state.votes[this.state.selected]} votes</p>
                 </div>
-                <button type="submit" onClick={this.vote}>Vote</button>
-                <button type="submit" onClick={this.randomAnecdote}>New anecdote</button>
-                <div>
-                    <h1>Anecdote with most votes:</h1>
-                    {this.props.anecdotes[mostVotedIndex()]}
-                    <br></br>
-                    This anecdote has {mostVoted()} votes
-                </div>
+                    <button type="submit" onClick={this.vote}>Vote</button>
+                    <button type="submit" onClick={this.randomAnecdote}>New anecdote</button>
             </div>
         )
     }
