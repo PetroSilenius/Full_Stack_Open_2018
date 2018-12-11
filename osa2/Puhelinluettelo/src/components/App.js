@@ -1,16 +1,12 @@
 import React from 'react';
 import List from './List'
+import axios from 'axios'
 
 class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            persons: [
-                { name: 'Arto Hellas', number: '040-123456' },
-                { name: 'Martti Tienari', number: '040-123456' },
-                { name: 'Arto Järvinen', number: '040-123456' },
-                { name: 'Lea Kutvonen', number: '040-123456' }
-            ],
+            persons: [],
             newName: '',
             newNumber: '',
             searchName: ''
@@ -38,6 +34,16 @@ class App extends React.Component {
                 <List persons={this.state.persons} searchName={this.state.searchName}/>
             </div>
         )
+    }
+
+    componentDidMount() {
+        console.log('did mount')
+        axios
+            .get('http://localhost:3001/persons')
+            .then(response => {
+                console.log('promise fulfilled')
+                this.setState({persons: response.data})
+            })
     }
 
     handleNameChange = (event) => {
