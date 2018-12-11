@@ -1,6 +1,7 @@
 import React from 'react';
 import List from './List'
 import personService from './services/persons'
+import Notification from './Notification'
 
 class App extends React.Component {
     constructor(props) {
@@ -9,13 +10,15 @@ class App extends React.Component {
             persons: [],
             newName: '',
             newNumber: '',
-            searchName: ''
+            searchName: '',
+            message: null,
         }
     }
     render() {
         return (
             <div>
                 <h2>Puhelinluettelo</h2>
+                <Notification message={this.state.message}/>
                 Rajaa näytettäviä: <input value = {this.state.searchName} onChange={this.handleSearchChange}/>
                 <h4> Lisää uusi </h4>
                 <form onSubmit={this.addPerson}>
@@ -77,8 +80,22 @@ class App extends React.Component {
                     .then(response =>{
                         this.setState({
                             persons: this.state.persons.concat(response),
+                            message: `Muutettiin ${response.name} tietoja`
                         })
-                })
+                        setTimeout(() => {
+                            this.setState({message: null})
+                        }, 2000)
+                    })
+                    //Jos henkilö poistetaan toisesta selaimesta juuri kun tietoja
+                    // ollaan muokkaamassa, ilmoitetaan asiasta käyttäjälle
+                    .catch(error => {
+                        this.setState({
+                            message: `${this.state.newName} on jo poistettu palvelimelta`
+                        })
+                        setTimeout(() => {
+                            this.setState({message: null})
+                        }, 2000)
+                    })
             }
             return
         }
@@ -87,7 +104,11 @@ class App extends React.Component {
             .then(response => {
                 this.setState({
                     persons: this.state.persons.concat(response),
-                    })
+                    message: `Lisättiin ${response.name}`
+                })
+                setTimeout(() => {
+                    this.setState({message: null})
+                }, 2000)
             })
 
 
@@ -106,11 +127,13 @@ class App extends React.Component {
                 .remove(id)
 
             this.setState({
-                persons: this.state.persons.filter(person => person.id !== id)
+                persons: this.state.persons.filter(person => person.id !== id),
+                message: `Poistettiin ${name}`
             })
+            setTimeout(() => {
+                this.setState({message: null})
+            }, 2000)
         }
-
-
     }
 }
 
