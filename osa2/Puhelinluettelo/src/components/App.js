@@ -1,6 +1,6 @@
 import React from 'react';
 import List from './List'
-import axios from 'axios'
+import personService from './services/persons'
 
 class App extends React.Component {
     constructor(props) {
@@ -12,7 +12,6 @@ class App extends React.Component {
             searchName: ''
         }
     }
-
     render() {
         return (
             <div>
@@ -31,18 +30,18 @@ class App extends React.Component {
                     </div>
                 </form>
                 <h2>Numerot</h2>
-                <List persons={this.state.persons} searchName={this.state.searchName}/>
+                <List persons={this.state.persons} searchName={this.state.searchName} removePerson={this.removePerson}/>
             </div>
         )
     }
 
     componentDidMount() {
         console.log('did mount')
-        axios
-            .get('http://localhost:3001/persons')
+        personService
+            .getAll()
             .then(response => {
                 console.log('promise fulfilled')
-                this.setState({persons: response.data})
+                this.setState({persons: response})
             })
     }
 
@@ -68,18 +67,50 @@ class App extends React.Component {
             number: this.state.newNumber
         }
 
+        let id = -1
+        this.state.persons.forEach(person => person.name === personObject.name ? id = person.id : 0)
+
         if(this.state.persons.find(p => p.name === this.state.newName )){
-            alert("On jo luettolossa")
+            if(window.confirm(`${this.state.newName} on jo luettelossa, korvataanko vanha numero uudella?`)){
+                personService
+                    .update(id, personObject)
+                    .then(response =>{
+                        this.setState({
+                            persons: this.state.persons.concat(response),
+                        })
+                })
+            }
             return
         }
-        const persons = this.state.persons.concat(personObject)
+        personService
+            .create(personObject)
+            .then(response => {
+                this.setState({
+                    persons: this.state.persons.concat(response),
+                    })
+            })
 
 
         this.setState({
-            persons,
             newName: '',
             newNumber: ''
         })
+    }
+
+    removePerson = (event) => {
+        const id = event.target.getAttribute('id')
+        const name = event.target.getAttribute('name')
+
+        if(window.confirm(`Poistetaanko ${name}?`)){
+            personService
+                .remove(id)
+
+            this.setState({
+                persons: this.state.persons.filter(person => person.id !== id)
+            })
+        }
+
+
     }
 }
 
