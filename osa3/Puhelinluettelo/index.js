@@ -1,8 +1,16 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
+
+morgan.token('body', function getId(req) {
+    return JSON.stringify(req.body)
+})
 
 app.use(bodyParser.json())
+app.use(morgan(':method :url :body :status :res[content-length] - :response-time ms'))
+
+
 
 let persons = [
     {
@@ -28,7 +36,7 @@ let persons = [
 ]
 
 app.get('/info', (request, response) => {
-    response.send(`<p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>
+    response.send(`<p>Puhelinluettelossa on ${persons.size} henkilön tiedot</p>
     <div>${new Date()}</div>`)
 })
 
